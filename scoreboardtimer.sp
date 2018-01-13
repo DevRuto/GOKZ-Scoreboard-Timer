@@ -107,7 +107,7 @@ void SetScore(int client, int score) {
 // Checkpoints
 void SetAssist(int client, int assist) {
 	//https://forums.alliedmods.net/showthread.php?t=198659
-	SetEntData(client, FindDataMapOffs(client, "m_iFrags") + 4, assist);
+	SetEntData(client, FindDataMapInfo(client, "m_iFrags") + 4, assist);
 }
 
 // Teleports
