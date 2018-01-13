@@ -59,34 +59,28 @@ public Action TimerHandler(Handle timer, int client) {
 // GOKZ Events
 public void GOKZ_OnTimerStart_Post(int client, int course) {
 	ResetClient(client);
-	ReplyToCommand(client, "OnTimerStart");
 	ScoreboardTimers[client] = CreateTimer(1.0, TimerHandler, client, TIMER_REPEAT);
 }
 
 public void GOKZ_OnPause_Post(int client) {
-	ReplyToCommand(client, "OnPause");
 	// Kill timer on pause
 	KillClientTimer(client);
 }
 
 public void GOKZ_OnResume_Post(int client) {
-	ReplyToCommand(client, "OnResume");
 	// Create new timer
 	ScoreboardTimers[client] = CreateTimer(1.0, TimerHandler, client, TIMER_REPEAT);
 }
 
 public void GOKZ_OnMakeCheckpoint_Post(int client) {
-	ReplyToCommand(client, "OnMakeCheckpoint");
 	SetAssist(client, GOKZ_GetCheckpointCount(client)); 
 }
 
 public void GOKZ_OnCountedTeleport_Post(int client) {
-	ReplyToCommand(client, "OnCountedTeleport");
 	SetDeath(client, GOKZ_GetTeleportCount(client));
 }
 
 public void GOKZ_OnTimerStopped(int client) {
-	ReplyToCommand(client, "OnTimerStop");
 	ResetClient(client);
 }
 
