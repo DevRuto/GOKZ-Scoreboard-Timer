@@ -38,11 +38,10 @@ public void OnAllPluginsLoaded()
 {
 	// TODO: do something with this
 	g_bGOKZ = LibraryExists("gokz-core");
-}
-
-public void OnPluginStart()
-{
 	
+	if (!g_bGOKZ) {
+		SetFailState("GOKZ-Core is required to run this plugin!");
+	}
 }
 
 public void OnClientDisconnect(int client)
@@ -52,7 +51,7 @@ public void OnClientDisconnect(int client)
 
 public Action TimerHandler(Handle timer, int client) {
 	float time = GOKZ_GetCurrentTime(client);
-	SetScore(client, RoundToNearest(time));
+	SetKills(client, RoundToNearest(time));
 }
 
 
@@ -100,8 +99,8 @@ void KillClientTimer(int client) {
 }
 
 // Timer
-void SetScore(int client, int score) {
-	SetEntProp(client, Prop_Data, "m_iFrags", score);
+void SetKills(int client, int kills) {
+	SetEntProp(client, Prop_Data, "m_iFrags", kills);
 }
 
 // Checkpoints
@@ -122,7 +121,7 @@ void ResetClient(int client) {
 		KillTimer(ScoreboardTimers[client]);
 		ScoreboardTimers[client] = null;
 	}
-	SetScore(client, 0);
+	SetKills(client, 0);
 	SetAssist(client, 0); 
 	SetDeath(client, 0);
 }
