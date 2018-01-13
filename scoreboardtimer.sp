@@ -37,7 +37,7 @@ public APLRes AskPluginLoad2(Handle h, bool late, char[] error, int err_max)
 public void OnAllPluginsLoaded()
 {
 	// TODO: do something with this
-    g_bGOKZ = LibraryExists("gokz-core");
+	g_bGOKZ = LibraryExists("gokz-core");
 }
 
 public void OnPluginStart()
