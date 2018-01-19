@@ -1,5 +1,6 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // https://gist.github.com/Bara/6ea238cffadc8446044691d86a1192ce
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
