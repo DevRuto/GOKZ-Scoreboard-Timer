@@ -1,7 +1,7 @@
 #define DEBUG
 
 #define PLUGIN_AUTHOR "Ruto"
-#define PLUGIN_VERSION "0.01"
+#define PLUGIN_VERSION "0.02"
 
 #include <sourcemod>
 #include <sdktools>
@@ -50,6 +50,9 @@ public void OnClientDisconnect(int client)
 }
 
 public Action TimerHandler(Handle timer, int client) {
+	if (ScoreboardTimers[client] == INVALID_HANDLE) {
+		return;
+	}
 	float time = GOKZ_GetCurrentTime(client);
 	SetKills(client, RoundToNearest(time));
 }
