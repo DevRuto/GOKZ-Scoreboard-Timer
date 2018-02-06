@@ -1,7 +1,7 @@
 #define DEBUG
 
 #define PLUGIN_AUTHOR "Ruto"
-#define PLUGIN_VERSION "0.02"
+#define PLUGIN_VERSION "0.03"
 
 #include <sourcemod>
 #include <sdktools>
