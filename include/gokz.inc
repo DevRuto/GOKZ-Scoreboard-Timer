@@ -1,5 +1,5 @@
-/* 	
-	GOKZ Stocks
+/*
+	GOKZ General Include
 
 	Website: https://bitbucket.org/kztimerglobalteam/gokz
 */
@@ -9,19 +9,11 @@
 #endif
 #define _gokz_included_
 
-
-
-// =========================  DEFINITIONS  ========================= //
-
-#define GOKZ_VERSION "1.0.4"
-#define TICKRATE 128.0
-#define EPSILON 0.000001
-#define SPEED_NORMAL 250.0
-#define SPEED_NO_WEAPON 260.0
+#include <movement>
 
 
 
-// =========================  ENUMERATIONS  ========================= //
+// =====[ ENUMS ]=====
 
 enum ObsMode
 {
@@ -36,35 +28,18 @@ enum ObsMode
 
 
 
-// =========================  DATA  ========================= //
+// =====[ CONSTANTS ]=====
 
-stock char gC_WeaponNames[][] = 
-{
-	"weapon_knife", "weapon_hkp2000", "weapon_deagle", "weapon_elite", "weapon_fiveseven", 
-	"weapon_glock", "weapon_p250", "weapon_tec9", "weapon_decoy", "weapon_flashbang", 
-	"weapon_hegrenade", "weapon_incgrenade", "weapon_molotov", "weapon_smokegrenade", "weapon_taser", 
-	"weapon_ak47", "weapon_aug", "weapon_awp", "weapon_bizon", "weapon_famas", 
-	"weapon_g3sg1", "weapon_galilar", "weapon_m249", "weapon_m4a1", "weapon_mac10", 
-	"weapon_mag7", "weapon_mp7", "weapon_mp9", "weapon_negev", "weapon_nova", 
-	"weapon_p90", "weapon_sawedoff", "weapon_scar20", "weapon_sg556", "weapon_ssg08", 
-	"weapon_ump45", "weapon_xm1014"
-};
-
-stock int gI_WeaponRunSpeeds[sizeof(gC_WeaponNames)] = 
-{
-	250, 240, 230, 240, 240, 
-	240, 240, 240, 245, 245, 
-	245, 245, 245, 245, 220, 
-	215, 220, 200, 240, 220, 
-	215, 215, 195, 225, 240, 
-	225, 220, 240, 150, 220, 
-	230, 210, 215, 210, 230, 
-	230, 215
-};
+#define GOKZ_VERSION "2.0.1"
+#define GOKZ_UPDATER_BASE_URL "http://updater.gokz.org/v2/"
+#define TICK_RATE 128.0
+#define EPSILON 0.000001
+#define SPEED_NORMAL 250.0
+#define SPEED_NO_WEAPON 260.0
 
 
 
-// =========================  STOCKS  ========================= //
+// =====[ STOCKS ]=====
 
 /**
  * Represents a time float as a string e.g. 01:23.45.
@@ -193,7 +168,6 @@ stock int IntMin(int value1, int value2)
  * @param input			Input string.
  * @param output		Output buffer.
  * @param size			Maximum size of output.
- * @noreturn
  */
 stock void String_ToLower(const char[] input, char[] output, int size)
 {
@@ -239,7 +213,6 @@ stock int GetObserverTarget(int client)
  *
  * @param client		Client being spectated.
  * @param sound			Sound to play.
- * @noreturn
  */
 stock void EmitSoundToClientSpectators(int client, const char[] sound)
 {
@@ -282,20 +255,21 @@ stock float CalcDeltaAngle(float startAngle, float endAngle)
  * @param input				Input String.
  * @param output			Output String.
  * @param size				Max Size of the Output string
- * @noreturn
  */
 stock void Color_StripFromChatText(const char[] input, char[] output, int size)
 {
 	int x = 0;
 	for (int i = 0; input[i] != '\0'; i++) {
 		
-		if (x + 1 == size) {
+		if (x + 1 == size)
+		{
 			break;
 		}
 		
 		int character = input[i];
 		
-		if (character > 0x08) {
+		if (character > 0x08)
+		{
 			output[x++] = character;
 		}
 	}
@@ -356,7 +330,6 @@ stock int NextIndex(int index, int max)
  * @param buffer		Output buffer.
  * @param bufferSize	Size of buffer.
  * @param index			Index of current/most recent value of input array.
- * @noreturn
  */
 stock void SortByRecent(const int[] input, int inputSize, int[] buffer, int bufferSize, int index)
 {
@@ -396,4 +369,49 @@ stock int Steam2ToSteamAccountID(const char[] steamID2)
 	}
 	
 	return IDNumberPart1 + (IDNumberPart2 << 1);
+}
+
+/**
+ * Teleports a player and removes their velocity and base velocity
+ * immediately and also after a 0.1 second delay. Automatically
+ * makes the player crouch if there is a ceiling above them.
+ *
+ * @param client		Client index.
+ * @param origin		Origin to teleport to.
+ * @param angles		Eye angles to set.
+ */
+stock void TeleportPlayer(int client, const float origin[3], const float angles[3])
+{
+	Movement_SetOrigin(client, origin);
+	Movement_SetEyeAngles(client, angles);
+	Movement_SetVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
+	Movement_SetBaseVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
+	Movement_SetGravity(client, 1.0);
+	CreateTimer(0.1, Timer_RemoveBoosts, GetClientUserId(client)); // Prevent booster exploits
+	
+	// Duck the player if there is something blocking them from above
+	Handle trace = TR_TraceHullFilterEx(origin, 
+		origin, 
+		view_as<float>( { -16.0, -16.0, 0.0 } ),  // Players are 32 x 32 x 72
+		view_as<float>( { 16.0, 16.0, 72.0 } ), 
+		MASK_PLAYERSOLID, 
+		TraceEntityFilterPlayers, 
+		client);
+	if (TR_DidHit(trace))
+	{
+		SetEntPropFloat(client, Prop_Send, "m_flDuckAmount", 1.0, 0);
+	}
+	delete trace;
+}
+
+public Action Timer_RemoveBoosts(Handle timer, int userid)
+{
+	int client = GetClientOfUserId(userid);
+	if (IsValidClient(client))
+	{
+		Movement_SetVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
+		Movement_SetBaseVelocity(client, view_as<float>( { 0.0, 0.0, 0.0 } ));
+		Movement_SetGravity(client, 1.0);
+	}
+	return Plugin_Continue;
 } 
