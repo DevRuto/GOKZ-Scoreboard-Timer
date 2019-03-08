@@ -1,42 +1,54 @@
-/* 	
-	GOKZ Globals Include File
+/*
+	gokz-global Plugin Include
 	
 	Website: https://bitbucket.org/kztimerglobalteam/gokz
 */
 
-#if defined _gokz_globals_included_
+#if defined _gokz_global_included_
 #endinput
 #endif
-#define _gokz_globals_included_
+#define _gokz_global_included_
 
 #include <GlobalAPI-Core>
 
 
 
-// =========================  ENUMERATIONS  ========================= //
+// =====[ ENUMS ]=====
 
 enum
 {
 	EnforcedCVar_Cheats = 0, 
 	EnforcedCVar_ClampUnsafeVelocities, 
 	EnforcedCVar_DropKnifeEnable, 
+	EnforcedCVar_AutoBunnyhopping, 
 	ENFORCEDCVAR_COUNT
 };
 
 
 
-// =========================  OTHER  ========================= //
+// =====[ CONSTANTS ]=====
+
+#define GL_SOUND_NEW_RECORD "gokz/holyshit.mp3"
 
 stock char gC_EnforcedCVars[ENFORCEDCVAR_COUNT][] = 
 {
 	"sv_cheats", 
 	"sv_clamp_unsafe_velocities", 
-	"mp_drop_knife_enable"
+	"mp_drop_knife_enable", 
+	"sv_autobunnyhopping"
+};
+
+stock float gF_EnforcedCVarValues[ENFORCEDCVAR_COUNT] = 
+{
+	0.0, 
+	0.0, 
+	0.0, 
+	0.0
 };
 
 
 
-// =========================  FORWARDS  ========================= //
+// =====[ FORWARDS ]=====
 
 /**
  * Called when a player sets a new global top time.
@@ -47,13 +59,12 @@ stock char gC_EnforcedCVars[ENFORCEDCVAR_COUNT][] =
  * @param timeType		Time type i.e. NUB or PRO.
  * @param rank			Ranking within the same time type.
  * @param rankOverall	Overall (NUB and PRO) ranking (0 if not ranked high enough).
- * @noreturn
  */
 forward void GOKZ_GL_OnNewTopTime(int client, int course, int mode, int timeType, int rank, int rankOverall);
 
 
 
-// =========================  NATIVES  ========================= //
+// =====[ NATIVES ]=====
 
 /**
  * Prints to chat the global records for a map, course and mode.
@@ -62,7 +73,6 @@ forward void GOKZ_GL_OnNewTopTime(int client, int course, int mode, int timeType
  * @param map	    	Map name or "" for current map.
  * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  * @param mode			GOKZ mode.
- * @noreturn
  */
 native void GOKZ_GL_PrintRecords(int client, const char[] map = "", int course, int mode);
 
@@ -74,13 +84,12 @@ native void GOKZ_GL_PrintRecords(int client, const char[] map = "", int course, 
  * @param course    	Course number e.g. 0=main, 1='bonus1' etc.
  * @param mode			GOKZ mode.
  * @param timeType		Type of time i.e. NUB or PRO.
- * @noreturn
  */
 native void GOKZ_GL_DisplayMapTopMenu(int client, const char[] map = "", int course, int mode, int timeType);
 
 
 
-// =========================  STOCKS  ========================= //
+// =====[ STOCKS ]=====
 
 /**
  * Gets the global mode enumeration equivalent for the GOKZ mode.
@@ -101,12 +110,12 @@ stock GlobalMode GOKZ_GL_GetGlobalMode(int mode)
 
 
 
-// =========================  DEPENDENCY  ========================= //
+// =====[ DEPENDENCY ]=====
 
-public SharedPlugin __pl_gokz_globals = 
+public SharedPlugin __pl_gokz_global = 
 {
-	name = "gokz-globals", 
-	file = "gokz-globals.smx", 
+	name = "gokz-global", 
+	file = "gokz-global.smx", 
 	#if defined REQUIRE_PLUGIN
 	required = 1, 
 	#else
@@ -115,7 +124,7 @@ public SharedPlugin __pl_gokz_globals =
 };
 
 #if !defined REQUIRE_PLUGIN
-public void __pl_gokz_globals_SetNTVOptional()
+public void __pl_gokz_global_SetNTVOptional()
 {
 	MarkNativeAsOptional("GOKZ_GL_PrintRecords");
 	MarkNativeAsOptional("GOKZ_GL_DisplayMapTopMenu");

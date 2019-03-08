@@ -1,7 +1,7 @@
 #define DEBUG
 
 #define PLUGIN_AUTHOR "Ruto"
-#define PLUGIN_VERSION "0.03"
+#define PLUGIN_VERSION "0.04"
 
 #include <sourcemod>
 #include <sdktools>
@@ -69,7 +69,7 @@ public Action TimerHandler(Handle timer, int client)
 	{
 		return;
 	}
-	float time = GOKZ_GetCurrentTime(client);
+	float time = GOKZ_GetTime(client);
 	SetKills(client, RoundToNearest(time));
 }
 
