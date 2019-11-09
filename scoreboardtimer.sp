@@ -19,7 +19,7 @@ public Plugin myinfo =
 	author = PLUGIN_AUTHOR, 
 	description = "Shows Time, Checkpoints, and Teleports in Kills/Assists/Death respectively in scoreboard", 
 	version = PLUGIN_VERSION, 
-	url = "https://github.com/RutoTV/GOKZ-Scoreboard-Timer"
+	url = "https://github.com/DevRuto/GOKZ-Scoreboard-Timer"
 };
 
 
