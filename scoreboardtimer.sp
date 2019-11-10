@@ -1,5 +1,3 @@
-#define DEBUG
-
 #define PLUGIN_AUTHOR "Ruto"
 #define PLUGIN_VERSION "0.04"
 
@@ -51,12 +49,19 @@ public void OnClientDisconnect(int client)
 	KillClientTimer(client);
 }
 
-public Action TimerHandler(Handle timer, int client)
+public Action TimerHandler(Handle timer, int userid)
 {
-	if (ScoreboardTimers[client] == INVALID_HANDLE)
+	int client = GetClientOfUserId(userid);
+	if (client <= 0)
 	{
 		return;
 	}
+
+	if (ScoreboardTimers[client] == null)
+	{
+		return;
+	}
+
 	float time = GOKZ_GetTime(client);
 	SetKills(client, RoundToNearest(time));
 }
@@ -66,7 +71,7 @@ public Action TimerHandler(Handle timer, int client)
 public void GOKZ_OnTimerStart_Post(int client, int course)
 {
 	ResetClient(client);
-	ScoreboardTimers[client] = CreateTimer(1.0, TimerHandler, client, TIMER_REPEAT);
+	CreateClientTimer(client);
 }
 
 public void GOKZ_OnPause_Post(int client)
@@ -78,7 +83,7 @@ public void GOKZ_OnPause_Post(int client)
 public void GOKZ_OnResume_Post(int client)
 {
 	// Create new timer
-	ScoreboardTimers[client] = CreateTimer(1.0, TimerHandler, client, TIMER_REPEAT);
+	CreateClientTimer(client);
 }
 
 public void GOKZ_OnMakeCheckpoint_Post(int client)
@@ -103,13 +108,19 @@ public void GOKZ_OnTimerEnd_Post(int client, int course, float time, int telepor
 
 // helpers
 
+void CreateClientTimer(int client)
+{
+	int userid = GetClientUserId(client);
+	ScoreboardTimers[client] = CreateTimer(1.0, TimerHandler, userid, TIMER_REPEAT);
+}
+
 void KillClientTimer(int client)
 {
 	// https://forums.alliedmods.net/showthread.php?t=205039
-	if (ScoreboardTimers[client] != INVALID_HANDLE)
+	if (ScoreboardTimers[client] != null)
 	{
 		KillTimer(ScoreboardTimers[client]);
-		ScoreboardTimers[client] = INVALID_HANDLE;
+		ScoreboardTimers[client] = null;
 	}
 }
 
@@ -135,11 +146,7 @@ void SetDeath(int client, int death)
 // Reset timer
 void ResetClient(int client)
 {
-	if (ScoreboardTimers[client] != null)
-	{
-		KillTimer(ScoreboardTimers[client]);
-		ScoreboardTimers[client] = null;
-	}
+	KillClientTimer(client);
 	SetKills(client, 0);
 	SetAssist(client, 0);
 	SetDeath(client, 0);
