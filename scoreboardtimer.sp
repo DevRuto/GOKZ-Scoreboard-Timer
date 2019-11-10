@@ -57,7 +57,7 @@ public Action TimerHandler(Handle timer, int userid)
 		return;
 	}
 
-	if (ScoreboardTimers[client] == INVALID_HANDLE)
+	if (ScoreboardTimers[client] == null)
 	{
 		return;
 	}
