@@ -1,5 +1,5 @@
 #define PLUGIN_AUTHOR "Ruto"
-#define PLUGIN_VERSION "0.04"
+#define PLUGIN_VERSION "0.05"
 
 #include <sourcemod>
 #include <sdktools>
